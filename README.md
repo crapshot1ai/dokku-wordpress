@@ -11,42 +11,42 @@ example: deploy wordpress blog for **example.com** with the app name **blog** yi
 
 ### create folder for deployment
 
-`mkdir blog`
+`mkdir blog`  
 `cd blog`
 
 ### create app named **blog**
-`dokku apps:create blog`
+`dokku apps:create blog`  
 
 ### install mariadb plugin for dokku
-`sudo dokku plugin:install https://github.com/dokku/dokku-mariadb.git mariadb`
+`sudo dokku plugin:install https://github.com/dokku/dokku-mariadb.git mariadb`  
 
 ### create database named **blogdb** # -i/-I sets mariadb version`
-`dokku mariadb:create blogdb -i mariadb -I 10.4.17` # generates database blogdb
+`dokku mariadb:create blogdb -i mariadb -I 10.4.17` # generates database blogdb  
 
-### link database **blogdb** to app **blog***
-`dokku mariadb:link blogdb blog` # links blogdb to blog and writes ENV variable 'DATABASE_URL' containing database infos for login
+### link database **blogdb** to app **blog***  
+`dokku mariadb:link blogdb blog` # links blogdb to blog and writes ENV variable 'DATABASE_URL' containing database infos for login  
 
-### create persistent storage to save themes, plugins, uploads (storing everythin in one dir; works) (ToDo: do with three separate directories for clarity)
+### create persistent storage to save themes, plugins, uploads (storing everythin in one dir; works) (ToDo: do with three separate directories for clarity)  
 
-`sudo mkdir -p /var/lib/dokku/data/storage/blog/wp-content/` # generate directors
-`sudo chown 32767:32767 /var/lib/dokku/data/storage/blog/wp-content/` #set permissions 32767:32767
-`dokku storage:mount record /var/lib/dokku/data/storage/blog/wp-content:/app/wp-content` #mount to persistent storage
+`sudo mkdir -p /var/lib/dokku/data/storage/blog/wp-content/` # generate directors\
+`sudo chown 32767:32767 /var/lib/dokku/data/storage/blog/wp-content/` #set permissions 32767:32767 \
+`dokku storage:mount record /var/lib/dokku/data/storage/blog/wp-content:/app/wp-content` #mount to persistent storage 
 
 ### Download latest wordpress version
 
-`curl -LO https://wordpress.org/latest.zip`
-`unzip latest.zip`
-`rm -rf latest.zip`
+`curl -LO https://wordpress.org/latest.zip` \
+`unzip latest.zip`   
+`rm -rf latest.zip` 
 
-`cd wordpress`
+`cd wordpress`  
 
 ### Download wordpress gitignore file to root folder that will be pushed (here wordpress)
 `curl https://raw.githubusercontent.com/github/gitignore/master/WordPress.gitignore > .gitignore`
 
 ### Initialize repository and make initial commit 
 
-`git init`
-`git add .`
+`git init` \
+`git add .` \
 `git commit -m "initial commit of wordpress files"`
 
 
@@ -111,9 +111,8 @@ web: vendor/bin/heroku-php-apache2 -i custom_php.ini
 ```
 
 ### define php buildpack and add to ENV variable
-`dokku buildpacks:add record https://github.com/heroku/heroku-buildpack-php`   
-
-use `dokku buildpacks:list record` to list linked buildpacks for an app
+`dokku buildpacks:add blog https://github.com/heroku/heroku-buildpack-php`   
+[use `dokku buildpacks:list blog` to list linked buildpacks for an app]
 
 ### create composer.json to define extensions; #gd: needed for wordpress; exif, mbstring, imagick are not needed but nice to have
 
@@ -164,21 +163,21 @@ use `dokku buildpacks:list record` to list linked buildpacks for an app
 
 ### Commit and push
 
-`git add .`
-`git commit -m 'update config'`
-`git remote add dokku dokku@hostname.net:blog` #hostname = your servers hostname
+`git add .` \
+`git commit -m 'update config'` \
+`git remote add dokku dokku@hostname.tld:blog` #hostname = your servers hostname, where you host **example.com**   
 `git push dokku master`
 
 ### to copy remote files to local /*/storage
 
-`sudo rsync -avz wp-content/ /var/lib/dokku/data/storage/blog/wp-content/`
+`sudo rsync -avz wp-content/ /var/lib/dokku/data/storage/blog/wp-content/`\
 `sudo chown -R 32767:32767 /var/lib/dokku/data/storage/blog/wp-content/`
 
 ### install and enable letsencrypt plugin to get ssl certificate
 
-`sudo dokku plugin:install https://github.com/dokku/dokku-letsencrypt.git` #install plugin
-`dokku config:set --global DOKKU_LETSENCRYPT_EMAIL=your@email.tld` #define email ... only once
-`dokku letsencrypt:cron-job --add` #setup cronjob to do auto renewal
+`sudo dokku plugin:install https://github.com/dokku/dokku-letsencrypt.git` #install plugin \
+`dokku config:set --global DOKKU_LETSENCRYPT_EMAIL=your@email.tld` #define email ... only once \
+`dokku letsencrypt:cron-job --add` #setup cronjob to do auto renewal \
 `dokku letsencrypt:enable blog`
 
 ## website to be reached via **blog.example.com** served via https
